@@ -1,7 +1,5 @@
 module VCardigan
-
   class Property
-
     APPLE_LABEL = /_\$!<(.*?)>!\$_/
 
     attr_accessor :group
@@ -216,7 +214,5 @@ module VCardigan
       end
       out
     end
-
   end
-
 end

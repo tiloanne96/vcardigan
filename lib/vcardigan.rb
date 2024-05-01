@@ -16,6 +16,24 @@ module VCardigan
       VCardigan::VCard.new.parse(*args)
     end
 
-  end
+    def parse_from_json(data)
+      data = JSON.parse(data.gsub('=>', ':')) if data.kind_of?(String)
 
+      return false unless data.kind_of?(Hash)
+
+      vcard = VCardigan.create
+
+      data.each do |key, array_values|
+        array_values.each_with_index do |value, position|
+          vcard.add(key,"")
+
+          value.each{ |prop_key, prop_value|
+            vcard.send(key)[position].instance_variable_set("@#{prop_key}".to_sym, prop_value)
+          }
+        end
+      end
+
+      vcard
+    end
+  end
 end

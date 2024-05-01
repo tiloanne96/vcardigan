@@ -1,7 +1,5 @@
 module VCardigan
-
   class VCard
-
     # A quoted-printable encoded string with a trailing '=', indicating that
     # it's not terminated
     UNTERMINATED_QUOTED_PRINTABLE = /ENCODING=QUOTED-PRINTABLE:.*=$/
@@ -16,7 +14,7 @@ module VCardigan
       end
 
       # Default options
-      @version = options[:version] || '4.0'
+      @version = options[:version] || '3.0'
       @chars = options[:chars] || 75
 
       @fields = {}
@@ -139,6 +137,36 @@ module VCardigan
 
       # Return vCard
       return vcard
+    end
+
+    def to_json
+      to_hash.to_json
+    end
+
+    def to_hash
+      result = {}
+
+      @fields.each do |key, value|
+        result["#{key}"] = []
+
+        value.each do |item|
+          properties = {}
+
+          item.instance_variables.each do |item_child|
+            next if item_child.to_s.eql?("@vcard")
+            
+            properties = properties.merge({
+              "#{item_child.to_s.gsub("@","")}": item.instance_variable_get(item_child)
+            })
+          end
+
+          result["#{key}"] << properties
+        end
+      end
+
+      result
+    rescue StandardError => error
+      false
     end
 
     def valid?
